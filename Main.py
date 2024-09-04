@@ -4,10 +4,8 @@ import streamlit as st
 import plotly.express as px
 from datetime import date
 
-imag = 'img-luck.png'
-
 # Parametros de Login AWS
-@st.cache_data
+@st.cache(ttl=600)
 def BD_Phoenix():
     config = {
     'user': 'user_automation_jpa',
