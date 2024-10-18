@@ -46,7 +46,6 @@ def BD_Phoenix():
     ]
     df = df[cols]
     return df
-st.set_page_config(layout='wide')
 if 'df' not in st.session_state:
     st.session_state.df = BD_Phoenix()
 df = st.session_state.df
