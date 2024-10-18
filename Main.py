@@ -4,8 +4,10 @@ import streamlit as st
 import plotly.express as px
 from datetime import date
 
+
+st.set_page_config(layout='wide')
 # Parametros de Login AWS
-@st.cache(ttl=600)
+@st.cache_resource(ttl=60000, show_spinner=False)
 def BD_Phoenix():
     config = {
     'user': 'user_automation_jpa',
