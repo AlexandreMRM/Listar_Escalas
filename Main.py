@@ -1,9 +1,7 @@
 import pandas as pd
 import mysql.connector
 import streamlit as st
-import plotly.express as px
 from datetime import date
-
 
 st.set_page_config(layout='wide')
 # Parametros de Login AWS
@@ -42,13 +40,18 @@ def BD_Phoenix():
         'Data Execucao', 
         'Servico', 
         'Data | Horario Apresentacao', 
-        'Status do Servico'
+        'Status do Servico',
+        'Total ADT',
+        'Total CHD' 
+
     ]
     df = df[cols]
     return df
+
 if 'df' not in st.session_state:
     st.session_state.df = BD_Phoenix()
 df = st.session_state.df
+df['Total Paxs'] = df['Total ADT'] + df['Total CHD']/2
 
 #lista dos guias - Para o selectbox do streamlit
 lista_guias = df['Guia'].dropna().unique().tolist()
@@ -107,7 +110,14 @@ if botao_filtrar:
     if selecionar_servico != "--- Todos ---":
         resultado_filtrado = resultado_filtrado[resultado_filtrado['Servico'] == selecionar_servico]
 
-    resultado_filtrado = resultado_filtrado[['Guia', 'Data da Escala','Servico', 'Status do Servico', 'Escala' ]]
+    resultado_filtrado = resultado_filtrado[['Guia', 'Data da Escala','Servico', 'Status do Servico', 'Escala', 'Total Paxs' ]]
+
+    resultado_filtrado = resultado_filtrado.groupby(['Escala', 'Servico'], as_index=False).agg({
+        'Guia': 'first',
+        'Data da Escala': 'first',
+        'Status do Servico': 'first',
+        'Total Paxs': 'sum'
+    })
 
     resultado_filtrado = resultado_filtrado.drop_duplicates(subset=['Servico', 'Escala'])    
     resultado_filtrado = resultado_filtrado.sort_values(by='Data da Escala')
@@ -128,6 +138,4 @@ if botao_filtrar:
                 st.write('Contador de Serviços')
                 st.dataframe(contador_servicos, hide_index=True, use_container_width=True)
                 
-
-
 
